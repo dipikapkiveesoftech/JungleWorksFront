@@ -38,15 +38,26 @@ class ProjectPost extends Component {
       return formIsValid;
   }
   handleChange(fieldData,e){
+    let errorMessage ={};
     let fields = this.state.fields;
     fields[fieldData]=e.target.value;
-    this.setState({fields});
+    if(fields["projectType"] != 0){
+      errorMessage["projectType"] = null;
+    }
+    else if(fields["createNewPost"] != 0){
+      errorMessage["createNewPost"] = null;
+    }
+    else if(fields["existingPost"] != 0){
+      errorMessage["existingPost"] = null;
+    }
+    else{
+      this.setState({fields : fields[fieldData]});
+    }
+    this.setState({errorMessage: errorMessage});
   }
   handleProjectPost = (selectedProject) => {
-    let { projectType } = this.state
+    let projectType = this.state.fields.projectType;
     let redirectTo = ""
-
-    //selectedProject.preventDefault();
 
     if(this.handleValidation()){
       if (projectType === "milestone") {
@@ -60,6 +71,9 @@ class ProjectPost extends Component {
           }
           else if  (projectType === "inOffice") {
             redirectTo = "/project-post-office"
+          }
+          else if  (projectType === "contest") {
+            redirectTo = "/contest-detail"
           }
           else {
             redirectTo = "/project-post-hourly"
@@ -93,7 +107,7 @@ class ProjectPost extends Component {
   render() {
     let { languageData } = this.props;
     let { selectedProjectType, postType, projectType } = this.state;
-    console.log("ProjectPost--->", languageData);
+    //console.log("ProjectPost--->", languageData);
     return (
       <>
         <section className="card_sec">

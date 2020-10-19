@@ -46,10 +46,25 @@ class ContestDetail extends Component {
     }
   }
 
-  handleChange(field, e) {
+  handleChangeContest(field, e) {
+    let errorMessage = {};
     let fields = this.state.fields;
     fields[field] = e.target.value;
-    this.setState({ fields });
+    console.log("fields",fields[field],e.target.value);
+    if(fields[field])
+      if(fields["contestTitle"] != 0 || ''){
+        errorMessage["contestTitle"] = null;
+      }
+      if(fields["selectDesignType"] != 0 || ''){
+        errorMessage["selectDesignType"] = null;
+      }
+      if(fields["comment"] != 0 || ''){
+        errorMessage["comment"] = null;
+      }
+    else{
+      this.setState({ fields });
+   }
+   this.setState({errorMessage: errorMessage});
   }
 
   handleValidation() {
@@ -57,13 +72,19 @@ class ContestDetail extends Component {
     let fields = this.state.fields;
     let errorMessage = {};
     let formIsValid = true;
-
-    //Name
+    //Name selectDesignType
     if (!fields["contestTitle"]) {
       formIsValid = false;
       errorMessage["contestTitle"] = languageData.REQUIRED_MESSAGE
     }
-
+    if (!fields["selectDesignType"]) {
+      formIsValid = false;
+      errorMessage["selectDesignType"] = languageData.REQUIRED_MESSAGE
+    }
+    if (!fields["comment"]) {
+      formIsValid = false;
+      errorMessage["comment"] = languageData.REQUIRED_MESSAGE
+    }
     this.setState({ errorMessage: errorMessage });
     return formIsValid;
   }
@@ -74,6 +95,19 @@ class ContestDetail extends Component {
       isContestDetailActive: !isContestDetailActive
     })
   }
+ /* handleChangeDesign(fieldData,e){
+    let errorMessage ={};
+    let fields = this.state.fields;
+    fields[fieldData]=e.target.value;
+    
+    if(fields["selectDesignType"] != 0 || ''){
+      errorMessage["selectDesignType"] = null;
+    }
+    else{
+      this.setState({fields : fields[fieldData]});
+    }
+    this.setState({errorMessage: errorMessage});
+  }*/
 
   render() {
     let { isContestDetailActive } = this.state;
@@ -91,8 +125,8 @@ class ContestDetail extends Component {
                         <div className="form-group">
                           <label>Contest Title</label>
                           <input type="text" className="form-control" name="contestTitle" value={this.state.fields["contestTitle"]}
-                            onChange={this.handleChange.bind(this, "contestTitle")} />
-                          <span class="error">{this.state.errorMessage["projectType"]}</span>
+                            onChange={this.handleChangeContest.bind(this, "contestTitle")} />
+                          <span class="error">{this.state.errorMessage["contestTitle"]}</span>
                         </div>
                         </div>
                         <div className="contest_width">
@@ -100,13 +134,17 @@ class ContestDetail extends Component {
                             <label>Select Design Type</label>
                             <div className="row">
                               <div className="col-md-9">
-                                <select className="form-control">
-                                  <option>Select Design Type</option>
+                                <select className="form-control"
+                                        name="selectDesignType" 
+                                        value={this.state.fields["selectDesignType"]}
+                                        onChange={this.handleChangeContest.bind(this,"selectDesignType")}>
+                                  <option value="">Select Design Type</option>
                                   <option>2</option>
                                   <option>3</option>
                                   <option>4</option>
                                   <option>5</option>
                                 </select>
+                                <span class="error">{this.state.errorMessage["selectDesignType"]}</span>
                               </div>
                               <div className="col-md-3">
                                 <button onClick={() => this.onPageRedirectHandlePage("/preferred-design")} type="button" className="btn save_btn"                        >
@@ -122,7 +160,11 @@ class ContestDetail extends Component {
                                   className="form-control"
                                   placeholder="Please, write your comment"
                                   rows="3"
-                                ></textarea>
+                                  name="comment" 
+                                  value={this.state.fields["comment"]}
+                                  onChange={this.handleChangeContest.bind(this,"comment")}>
+                                </textarea>
+                                <span class="error">{this.state.errorMessage["comment"]}</span>
                               </div>
                             </div>
                         </div>
@@ -517,10 +559,10 @@ class ContestDetail extends Component {
                         </div>
                       </div>
                       <div className="save_cancel text-right">
-                        <button type="submit" className="btn cancel_btn">
+                        <button type="button" className="btn cancel_btn">
                           Cancel
                           </button>
-                        <button onClick={() => this.onPageRedirectHandle("/confirm-project")} type="submit" className="btn save_btn"                        >
+                        <button onClick={() => this.onPageRedirectHandle("/confirm-project")} type="button" className="btn save_btn"                        >
                           Calculate
                           </button>
                       </div>

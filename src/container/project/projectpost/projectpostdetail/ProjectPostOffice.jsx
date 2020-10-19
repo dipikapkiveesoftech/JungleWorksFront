@@ -7,25 +7,63 @@ import { onReduxRouteChange, onReduxProjectConfirmationDataHandle } from "../../
 import { connect } from "react-redux";
 
 class ProjectPostOffice extends Component {
-  onPageRedirectHandle = (redirectTo) => {
-    let confirmationData = {
-      projectType: "office",
-      title: "Design My logo",
-      confirmationType: "Guranteed",
-      privateText: "yes",
-      award: {
-        first: "1st US$499.00",
-        second: "2nd US$159.00",
-        third: "3rd US$100.00",
-      },
-      promotion: "US$79.00",
-      blind: "US$39.00",
-      total: " US$798.00"
+  constructor(props) {
+    super(props);
+    this.state = {
+      fields :{},
+      errorMessage : {}
+    };
+  }
+    handleValidation(){
+      let { languageData } = this.props;
+      let fields = this.state.fields;
+      let errorMessage ={};
+      let formIsValid = true;
+  
+      if(!fields["itWebDevloper"]){
+        formIsValid =false;
+        errorMessage["itWebDevloper"] = languageData.REQUIRED_MESSAGE
+        
+      }
+      this.setState({errorMessage: errorMessage});
+      return formIsValid;
+  }
+  
+    handleChange(fieldData,e){
+      let errorMessage ={};
+      let fields = this.state.fields;
+      fields[fieldData]=e.target.value;
+      if(fields[fieldData] != 0 || ''){
+        errorMessage["itWebDevloper"] = null;
+        this.setState({errorMessage: errorMessage});
+        return
+      }
+      else{
+        this.setState({fields});
+      }
     }
-    var newurl =redirectTo + '?projectType=office';
-    this.props.onProjectConfirmationDataHandle(confirmationData)
-    this.props.onRouteChange(redirectTo)
-    this.props.history.push(newurl)
+
+  onPageRedirectHandle = (redirectTo) => {
+    if(this.handleValidation()){
+        let confirmationData = {
+          projectType: "office",
+          title: "Design My logo",
+          confirmationType: "Guranteed",
+          privateText: "yes",
+          award: {
+            first: "1st US$499.00",
+            second: "2nd US$159.00",
+            third: "3rd US$100.00",
+          },
+          promotion: "US$79.00",
+          blind: "US$39.00",
+          total: " US$798.00"
+        }
+        var newurl =redirectTo + '?projectType=office';
+        this.props.onProjectConfirmationDataHandle(confirmationData)
+        this.props.onRouteChange(redirectTo)
+        this.props.history.push(newurl)
+      }
   }
   render() {
     return (
@@ -84,13 +122,17 @@ class ProjectPostOffice extends Component {
                             <div className="col-lg-4">
                               <div className="form-group">
                                 <label>Scope of Business</label>
-                                <select className="form-control">
-                                  <option>IT/WEB DEVELOPER</option>
+                                <select className="form-control"
+                                    name="itWebDevloper" 
+                                    value={this.state.fields["itWebDevloper"]}
+                                    onChange={this.handleChange.bind(this,"itWebDevloper")}>
+                                  <option value="">IT/WEB DEVELOPER</option>
                                   <option>2</option>
                                   <option>3</option>
                                   <option>4</option>
                                   <option>5</option>
                                 </select>
+                                <span class="error">{this.state.errorMessage["itWebDevloper"]}</span>
                               </div>
                             </div>
                             <div className="col-lg-8">
@@ -166,10 +208,10 @@ class ProjectPostOffice extends Component {
                             ></textarea>
                           </div>
                           <div className="text-right save_cancel">
-                            <button type="submit" className="btn save_btn" onClick={() => this.onPageRedirectHandle("/confirm-project")}>
+                            <button type="button" className="btn save_btn" onClick={() => this.onPageRedirectHandle("/confirm-project")}>
                               Save & Continue
                             </button>
-                            <button type="submit" className="btn cancel_btn">
+                            <button type="button" className="btn cancel_btn">
                               Cancel
                             </button>
                           </div>
